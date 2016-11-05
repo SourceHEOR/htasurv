@@ -2,7 +2,7 @@
 
 
 
-`htasurv` is a Stata module for assessing alternative parametric distributions when extrapolating survival data for use in health economic models. The function `distfind` loops through alternative distributions (specified by the user) and reports statistics and produces plots specified in [NICE DSU TSD 14.0](http://www.nicedsu.org.uk/NICE%20DSU%20TSD%20Survival%20analysis.updated%20March%202013.v2.pdf). The function `distanalysis` writes out results and useful statistics (e.g. variance-covariance matrix) for the analyst. The module can be installed directly from github, using the [github module](https://github.com/haghish/github). Once the github module is installed, installation of htasurv is:
+`htasurv` is a Stata module for assessing alternative parametric distributions when extrapolating survival data for use in health economic models. The function `distfind` loops through alternative distributions (specified by the user) and reports statistics and produces plots specified in [NICE DSU TSD 14.0](http://www.nicedsu.org.uk/NICE%20DSU%20TSD%20Survival%20analysis.updated%20March%202013.v2.pdf). The function `distanalysis` writes out results and useful statistics (e.g. variance-covariance matrix) for the analyst. The module can be installed directly from github, using the [github module](https://github.com/haghish/github). Once the github module is installed, installation of `htasurv` is:
 
 	github install sourceHEOR/htasurv
 
@@ -19,7 +19,7 @@ For `distanalysis`:
 
 `distanalysis` will estimate the model with variables given in `varlist` with distribution given in `sdist` (full title; all lowercase). The resulting model will be written to .csv and .rtf files with file names given by `doctitle`. If a folder location is specified by `fname`, all files will be stored there (otherwise, the current directory is used).
 
-### Example use:
+### Example use
 
 	sysuse cancer.dta, clear
 	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
