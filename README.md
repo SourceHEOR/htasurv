@@ -17,19 +17,20 @@ For `distanalysis`:
 
 	distanalysis [varlist], sdist(string) doctitle(string) [caption(string)] [fname(string)]
 
-	`distanalysis` will estimate the model with variables given in `varlist` with distribution given in `sdist` (full title; all lowercase). The resulting model will be written to .csv and .rtf files with file names given by `doctitle`. If a folder location is specified by `fname`, all files will be stored there (otherwise, the current directory is used).
+`distanalysis` will estimate the model with variables given in `varlist` with distribution given in `sdist` (full title; all lowercase). The resulting model will be written to .csv and .rtf files with file names given by `doctitle`. If a folder location is specified by `fname`, all files will be stored there (otherwise, the current directory is used).
 
 ### Example use:
 
 	sysuse cancer.dta, clear
 	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
 	distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)
-	distanalysis age i.drug, sdist(gompertz) doctitle(test) tabcaption("Gompertz")
+	distanalysis age i.drug, sdist(gompertz) doctitle(test) caption("Gompertz")
 
 Author
 ------
   **D Trueman**  
   Source HEOR
+  
   _dtrueman@sourceheor.com_     
   _http://www.sourceheor.com/_  
 
