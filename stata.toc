@@ -1,0 +1,3 @@
+v 1.0.0
+d 'HTASURV': Stata module for assessing alternative parametric distributions when extrapolating survival data for use in health economic models.
+p htasurv
