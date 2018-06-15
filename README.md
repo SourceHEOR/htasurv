@@ -25,6 +25,13 @@ For `distanalysis`:
 	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
 	distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)
 	distanalysis age i.drug, sdist(gompertz) doctitle(test) caption("Gompertz")
+	distplot if drug==1, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
+	distplot if drug==2, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
+	distplot if drug==3, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
+	recode drug (1=0) (2=1)
+	distplot drug if drug==0 | drug==1, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
+
+	
 
 Author
 ------
