@@ -18,8 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 program define distplot
 version 12.1
 syntax [varlist(default=none)] [if], exrange(real) intrange(real) ///
-	dlist(string) drugnames(string) [ytitle(string) xtitle(string)]
+	dlist(string) drugnames(string) [ytitle(string) xtitle(string) ///
+	mtitle(string) GRaphs]
 tokenize `drugnames'
+
+if "`graphs'"!="" {
+	local dir `c(pwd)'
+	qui cd "`dir'/graphs"
+}
 
 *Store a temporary version of the main dataset
 tempfile tempresults
@@ -134,24 +140,28 @@ foreach d in `dlist' {
 if "`if'"!="" & `levels'== 2 {
 	sts graph `if' & real==1, by(`varlist') addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange')
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"=="" & `levels' == 2 {
 	sts graph if real==1, by(`varlist') addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange')
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"!="" & `levels' == 1 {
 	sts graph `if' & real==1, addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange')
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"=="" & `levels' == 1 {
 	sts graph if real==1, addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange')
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 
 *Restore original dataset
 use `tempresults', clear
+erase "`tempresults'"
+if "`graphs'"!="" {
+	qui cd "`dir'"
+}
 end

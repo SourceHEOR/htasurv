@@ -20,6 +20,7 @@
 {p 8 17 2}
 {cmd:distfind}
 [{varlist}]
+[if]
 {cmd:,}
 {cmd: dlist({it:distributions})}
 {cmd: timevar({varname})}
@@ -30,7 +31,7 @@
 {synopthdr}
 {synoptline}
 {syntab:Main}
-{synopt: {opt dlist(distributions)}} list of distributions to try. All lowercase. Typically defined in a macro (see example){p_end}
+{synopt: {opt dlist(distributions)}} list of distributions to try. All lower case. Typically defined in a macro (see example){p_end}
 {synopt: {opt timevar(varname)}} variable defining time-to-event. used in same way as {it:stset}{p_end}
 {synopt: {opt failure(varname)}} variable specifying the failure event. Assumes 1=failure, 0=censoring{p_end}
 {synopt: {opt gr:aphs}} if specified, will store Cox-Snell resiudal plots in currdirectory/graphs{p_end}
@@ -44,7 +45,7 @@
 {title:Description}
 
 {pstd}
-{cmd:distfind} fits alternative parametric survival distributions defined in {it:dlist} and reports standard summary statistics such as the Akaike Information Criterion, and produces plots of the Cox-Snell residuals.
+{cmd:distfind} fits alternative parametric survival distributions defined in {dlist} and reports standard summary statistics such as the Akaike Information Criterion, and produces plots of the Cox-Snell residuals.
 
 
 {marker options}{...}
@@ -62,11 +63,13 @@
 {cmd:failure({it:failvar})} variable specifying the failure event. Assumes 1=failure, 0=censoring.
 
 {phang}
-{opt gr:aphs} will store graphs in currentdirectory/graphs, if avaiable. This is designed for similar folder structures to those used in the projectTemplate package in R.
+{opt gr:aphs} will store graphs in currentdirectory/graphs, if avaiable. This is designed for simialr folder structures to those used in the projectTemplate package in R.
 
 {marker examples}{...}
 {title:Examples}
+
+
 {phang}{cmd:. sysuse cancer.dta}{p_end}
 {phang}{cmd:. global dlist "gamma weibull gompertz exponential lognormal loglogistic"}{p_end}
 {phang}{cmd:. distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)}{p_end}
-{phang}{cmd:. distanalysis age i.drug, sdist(gompertz) doctitle(test) caption("Gompertz")}{p_end}
+{phang}{cmd:. distanalysis age i.drug, sdist(gompertz) doctitle(test) tabcaption("Gompertz")}{p_end}
