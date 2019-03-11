@@ -29,10 +29,10 @@ syntax [varlist(default=none fv)] [if], dlist(string) fname(string)	///
 
 
 if "`modify'" == "" {
-	putexcel set "`fname'", sheet("`sname'") replace
+	putexcel set "`fname'", sheet("`sname'", replace) modify
 }
 else {
-	putexcel set "`fname'", sheet("`sname'") modify
+	putexcel set "`fname'", sheet("`sname'". modify) modify
 }
 /*
 *Set up spreadsheet
