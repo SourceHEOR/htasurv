@@ -31,8 +31,13 @@ if "`graphs'"!="" {
 tempfile tempresults
 save "`tempresults'"
 
+if "`if'"!=""{
+ keep `if'
+}
+tempfile tempresults2
+save "`tempresults2'"
+
 *Some checks
-qui stset
 local varpres:word count `varlist'
 if `varpres'>1 {
 	di in red "Only one variable can be entered in varlist at present"
@@ -66,17 +71,28 @@ if `exrange'<0 {
 
 *Fit parametric model(s), save stcurve data using outfile
 foreach d in `dlist' {
-
+	
 	streg `varlist' `if', dist(`d')
 	
 	if `levels'==1 {
-		stcurve , survival range(0 `exrange') outfile(`d', replace)
-		local myadd "line surv1 _t if dist==1"
+		stcurve, survival range(0 `exrange') outfile(`d', replace)
+		//if "`if'"=="" {
+			local myadd "line surv1 _t if dist==1"
+		//}
+		//else {
+		//	local myadd "line surv1 _t `if' & dist==1"
+		//}
+		
 	}
 	else if `levels'==2 {
-		stcurve , at(`varlist'=0) at(`varlist'=1) survival ///
+		stcurve, at(`varlist'=0) at(`varlist'=1) survival ///
 		range(0 `exrange') outfile(`d', replace)
-		local myadd "line surv1 _t if dist==1 || line surv2 _t if dist==1"
+		//if "`if'"=="" {
+			local myadd "line surv1 _t if dist==1 || line surv2 _t if dist==1"
+		//}
+		//else {
+		//	local myadd "line surv1 _t `if' & dist==1 || line surv2 _t `if' & dist==1"
+		//}
 	}
 }
 
@@ -96,7 +112,7 @@ foreach d in `dlist' {
 save combined, replace
 
 *Overlay extrapolations on Kaplan-Meier
-use `tempresults', clear
+use `tempresults2', clear
 gen real=1 `if'
 append using combined
 local y = 1
@@ -123,14 +139,24 @@ foreach d in `dlist' {
 		local z = `x' + 1
 		local mylegend = `"`mylegend'"' + `" `x' "`1' - `d'" `z' "`2' - `d'" "'
 		if `y' > 1 {
+			//if "`if'"=="" {
 			local myadd "`myadd' || line surv1 _t if dist==`y' || line surv2 _t if dist==`y'"
+			//}
+			//else {
+			//	local myadd "`myadd' || line surv1 _t `if' & dist==`y' || line surv2 _t `if' & dist==`y'"
+			//}
 		}
 	}
 	else {
 		local x = `x' + 1
 		local mylegend = `"`mylegend'"' + `" `x' "`1' - `d'" "'
 		if `y' > 1 {
-			local myadd "`myadd' || line surv1 _t if dist==`y' "
+			//if "`if'"=="" {
+				local myadd "`myadd' || line surv1 _t if dist==`y' "
+			//}
+			//else {
+			//	local myadd "`myadd' || line surv1 _t `if' & dist==`y' "
+			//}
 		}
 	}
 	local y=`y'+1
@@ -161,6 +187,7 @@ else if "`if'"=="" & `levels' == 1 {
 *Restore original dataset
 use `tempresults', clear
 erase "`tempresults'"
+erase "`tempresults2'"
 if "`graphs'"!="" {
 	qui cd "`dir'"
 }
