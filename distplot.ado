@@ -70,35 +70,27 @@ if `exrange'<0 {
 }
 
 *Fit parametric model(s), save stcurve data using outfile
-foreach d in `dlist' {
-	
-	streg `varlist' `if', dist(`d')
-	
-	if `levels'==1 {
-		stcurve, survival range(0 `exrange') outfile(`d', replace)
-		//if "`if'"=="" {
-			local myadd "line surv1 _t if dist==1"
-		//}
-		//else {
-		//	local myadd "line surv1 _t `if' & dist==1"
-		//}
-		
-	}
-	else if `levels'==2 {
-		stcurve, at(`varlist'=0) at(`varlist'=1) survival ///
-		range(0 `exrange') outfile(`d', replace)
-		//if "`if'"=="" {
-			local myadd "line surv1 _t if dist==1 || line surv2 _t if dist==1"
-		//}
-		//else {
-		//	local myadd "line surv1 _t `if' & dist==1 || line surv2 _t `if' & dist==1"
-		//}
+foreach d in `dlist' {	
+	cap noisily streg `varlist' `if', dist(`d') iter(100)
+	if _rc==0 {
+		if  e(converged)==1 {
+			local dlist2 = "`dlist2' `d'"
+			if `levels'==1 {
+				stcurve, survival range(0 `exrange') outfile(`d', replace)
+					local myadd "line surv1 _t if dist==1"
+			}
+			else if `levels'==2 {
+				stcurve, at(`varlist'=0) at(`varlist'=1) survival ///
+				range(0 `exrange') outfile(`d', replace)
+					local myadd "line surv1 _t if dist==1 || line surv2 _t if dist==1"
+			}
+		}	
 	}
 }
 
 *Create datset containing all extraploations
 local y = 1
-foreach d in `dlist' {
+foreach d in `dlist2' {
 	if `y'==1 {
 		use `d', clear
 		gen dist=1
@@ -132,8 +124,11 @@ if "`xtitle'"=="" {
 	local xtitle = "Time"
 }
 
+di "$dlist2"
+
+
 *Create legend and call to addplot
-foreach d in `dlist' {
+foreach d in `dlist2' {
 	if `levels'==2 {
 		local x = `x' + 2
 		local z = `x' + 1
@@ -161,6 +156,7 @@ foreach d in `dlist' {
 	}
 	local y=`y'+1
 }
+di "`myadd'"
 
 *Create sts graph based on 1/2 variables and whether and if statement
 if "`if'"!="" & `levels'== 2 {

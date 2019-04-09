@@ -54,39 +54,46 @@ putexcel C`trow'="Coef." D`trow'="Std. Err" E`trow'="ll" ///
 foreach dist in `dlist' {
 	
 	*Run regression and store output
-	streg `varlist' `if', d(`dist')
-	matrix A = e(V)
-	local nvars = rowsof(A) //Includes ommitted variables
-	matrix B = r(table)'
-	local rownms: rown B    //Row names
-	
-	*Get variance-covriance matrix without zeros
-	mata: nozero("A")
+	cap noisily streg `varlist' `if', d(`dist') nohr iter(100)
+	if _rc!=0 {
+		cap noisily streg `varlist' `if', d(`dist') iter(100)
+	}
+	if _rc==0 {
+		matrix A = e(V)
+		local nvars = rowsof(A) //Includes ommitted variables
+		matrix B = r(table)'
+		local rownms: rown B    //Row names
+		
+		*Get variance-covriance matrix without zeros
+		mata: nozero("A")
 
-	if !missing("`j'") {
-		local myrow = `myrow' + `j'
+		if !missing("`j'") {
+			local myrow = `myrow' + `j'
+		}
+		qui putexcel A`myrow' = ("`dist'")
+		local j = 0
+		
+		forvalues i = 1/`nvars' {	
+			if !missing(B[`i', 2]) {
+				local rowname: word `i' of `rownms'
+				local mynewrow = `myrow' + `j'
+				local mycoef = B[`i', 1]
+				local myse   = B[`i', 2]
+				local myll   = B[`i', 5]
+				local myul   = B[`i', 6]
+				
+				quietly {
+					putexcel B`mynewrow' = "`rowname'"
+					putexcel C`mynewrow' = `mycoef'
+					putexcel D`mynewrow' = `myse'
+					putexcel E`mynewrow' = `myll'
+					putexcel F`mynewrow' = `myul'
+				}
+				local j = `j' + 1	
+			}		
+		}
+		qui putexcel G`myrow' = matrix(VarCovar)
 	}
-	putexcel A`myrow' = ("`dist'")
-	local j = 0
-	
-	forvalues i = 1/`nvars' {	
-		if !missing(B[`i', 2]) {
-			local rowname: word `i' of `rownms'
-			local mynewrow = `myrow' + `j'
-			local mycoef = B[`i', 1]
-			local myse   = B[`i', 2]
-			local myll   = B[`i', 5]
-			local myul   = B[`i', 6]
-			
-			putexcel B`mynewrow' = "`rowname'"
-			putexcel C`mynewrow' = `mycoef'
-			putexcel D`mynewrow' = `myse'
-			putexcel E`mynewrow' = `myll'
-			putexcel F`mynewrow' = `myul'
-			local j = `j' + 1	
-		}		
-	}
-	putexcel G`myrow' = matrix(VarCovar)
 }
 putexcel close
 end

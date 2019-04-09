@@ -11,28 +11,31 @@ if "`graphs'"!="" {
 foreach d in `dlist' {
 	qui stset `timevar' `failure'
 	if "`strata'"!="" {
-		streg `varlist' `if', dist(`d') strata(`strata')
+		cap noisily streg `varlist' `if', dist(`d') strata(`strata') iter(100)
 	}
 	else {
-		streg `varlist' `if', dist(`d')
+		cap noisily streg `varlist' `if', dist(`d')  iter(100)
 	}
-	estimates store `d'
-	predict double cs, csnell
-	stset, clear
-	qui stset cs `failure'
-	qui sts gen km = s `if'
-	qui gen double H = -ln(km) `if'
-	qui line H cs cs, sort title(`d') leg(off) ///
-		ytitle("Cumulative Hazard", size(small) margin(medsmall)) ///
-		xtitle(Cox-Snell Residuals, size(small) margin(medsmall)) ///
-		saving(`d', replace) name(`d', replace)
-	drop cs km H cs
+	if  e(converged) == 1 {
+		local dlist2=`dlist2' `d'
+		estimates store `d'
+		predict double cs, csnell
+		stset, clear
+		qui stset cs `failure'
+		qui sts gen km = s `if'
+		qui gen double H = -ln(km) `if'
+		qui line H cs cs, sort title(`d') leg(off) ///
+			ytitle("Cumulative Hazard", size(small) margin(medsmall)) ///
+			xtitle(Cox-Snell Residuals, size(small) margin(medsmall)) ///
+			saving(`d', replace) name(`d', replace)
+		drop cs km H cs
+	}
 }
 
 *Determine AIC
-estimates stats `dlist'
+estimates stats `dlist2'
 capture window manage close graph _all
-gr combine `dlist', saving("cox_snell_residuals", replace)
+gr combine `dlist2', saving("cox_snell_residuals", replace)
 
 if "`graphs'"!="" {
 	qui cd "`dir'"
