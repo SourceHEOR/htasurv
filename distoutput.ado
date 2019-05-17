@@ -32,7 +32,7 @@ if "`modify'" == "" {
 	putexcel set "`fname'", sheet("`sname'", replace) modify
 }
 else {
-	putexcel set "`fname'", sheet("`sname'". modify) modify
+	putexcel set "`fname'", sheet("`sname'", modify) modify
 }
 /*
 *Set up spreadsheet

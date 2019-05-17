@@ -9,22 +9,24 @@
 ### Syntax
 For `distfind`:
 
-    distfind [varlist], dlist(string) timevar(varname) failure(varname) [GRaphs] [SUPpress]
+    distfind [varlist]  [if], dlist(string) timevar(varname) failure(varname) [GRaphs] [SUPpress]
 
 Where `varlist` are the variables in the survival model (often treatment), `timevar` is the variable defining the time-to-event, and `failure` is a binary variable for failure vs censoring (1=failure, 0=censored). If the `graphs` option is used, plots will be saved to `curentdirectory/graphs`.`dlist` is the list of distributions to estimate as lowercase strings (see example below).  If the `suppress` option is used, the Cox-Snell residuals will not be plotted. The resulting table of diagnostics is returned in `e(diag)`. 
 
-For `distanalysis`:
+For `distoutput`:
+	
+	distoutput [varlist] [if], dlist(string) fname(string)	sname(string)
 
-	distanalysis [varlist], sdist(string) doctitle(string) [caption(string)] [fname(string)]
+`distoutput` will estimate the models with variables given in `varlist` with distributions given in `dlist` (full title; all lowercase). The resulting models will be written to `fname` on sheet `sname` along with standard errors, 95% confidence intervals, and variance-covariance matrices.
 
-`distanalysis` will estimate the model with variables given in `varlist` with distribution given in `sdist` (full title; all lowercase). The resulting model will be written to .csv and .rtf files with file names given by `doctitle`. If a folder location is specified by `fname`, all files will be stored there (otherwise, the current directory is used).
 
 ### Example use
 
 	sysuse cancer.dta, clear
 	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
 	distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)
-	distanalysis age i.drug, sdist(gompertz) doctitle(test) caption("Gompertz")
+	matrix list e(diag)
+	distoutput age i.drug, dlist($dlist) fname("test.xls") sname("outcome")
 	distplot if drug==1, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
 	distplot if drug==2, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
 	distplot if drug==3, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")

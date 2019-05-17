@@ -26,15 +26,17 @@
 {cmd: timevar({varname})}
 {cmd: failure({varname})}
 [{cmdab:gr:aphs}]
+[{cmdab:sup:press}]
 
 {synoptset 20 tabbed}{...}
 {synopthdr}
 {synoptline}
 {syntab:Main}
 {synopt: {opt dlist(distributions)}} list of distributions to try. All lower case. Typically defined in a macro (see example){p_end}
-{synopt: {opt timevar(varname)}} variable defining time-to-event. used in same way as {it:stset}{p_end}
+{synopt: {opt timevar(varname)}} variable defining time-to-event. Used in the same way as {it:stset}{p_end}
 {synopt: {opt failure(varname)}} variable specifying the failure event. Assumes 1=failure, 0=censoring{p_end}
 {synopt: {opt gr:aphs}} if specified, will store Cox-Snell resiudal plots in currdirectory/graphs{p_end}
+{synopt: {opt sup:press}} if specified, will suppress production of the Cox-Snell residual plots{p_end}
 
 {synoptline}
 {p2colreset}{...}
@@ -57,7 +59,7 @@
 {cmd:dlist({it:distributions})} list of distributions to try. All lowercase. Typically defined in a macro (see example). Legal names are "weibull" "gompertz" "gamma" "lognormal" "loglogistic" "exponential".
 
 {phang}
-{cmd:timevar({it:timevar})} variable defining time-to-event. used in same way as {it:stset}
+{cmd:timevar({it:timevar})} variable defining time-to-event. Used in the same way as {it:stset}
 
 {phang}
 {cmd:failure({it:failvar})} variable specifying the failure event. Assumes 1=failure, 0=censoring.
