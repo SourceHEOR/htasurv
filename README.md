@@ -9,9 +9,9 @@
 ### Syntax
 For `distfind`:
 
-    distfind [varlist], dlist(string) timevar(varname) failure(varname) [GRaphs]
+    distfind [varlist], dlist(string) timevar(varname) failure(varname) [GRaphs] [SUPpress]
 
-Where `varlist` are the variables in the survival model (often treatment), `timevar` is the variable defining the time-to-event, and `failure` is a binary variable for failure vs censoring (1=failure, 0=censored). If the `graphs` option is used, plots will be saved to `curentdirectory/graphs`.`dlist` is the list of distributions to estimate as lowercase strings (see example below).
+Where `varlist` are the variables in the survival model (often treatment), `timevar` is the variable defining the time-to-event, and `failure` is a binary variable for failure vs censoring (1=failure, 0=censored). If the `graphs` option is used, plots will be saved to `curentdirectory/graphs`.`dlist` is the list of distributions to estimate as lowercase strings (see example below).  If the `suppress` option is used, the Cox-Snell residuals will not be plotted. The resulting table of diagnostics is returned in `e(diag)`. 
 
 For `distanalysis`:
 
@@ -36,8 +36,8 @@ For `distanalysis`:
 Author
 ------
   **D Trueman**  
-  Source HEOR
+  Source Health Economics
   
-  _dtrueman@sourceheor.com_     
-  _http://www.sourceheor.com/_  
+  _dtrueman@source-he.com_     
+  _http://www.source-he.com/_  
 
