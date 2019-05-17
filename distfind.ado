@@ -1,6 +1,7 @@
 program define distfind, eclass
 version 12.1
-syntax [varlist(default=none fv)] [if], dlist(string) timevar(varname) failure(varname) [GRaphs] [strata(varlist)] [SUPpress]
+syntax [varlist(default=none fv)] [if], dlist(string) timevar(varname) ///
+	failure(varname) [GRaphs] [SUPpress] [strata(varlist)] 
 
 if "`graphs'"!="" & "`suppress'"=="" {
 	local dir `c(pwd)'

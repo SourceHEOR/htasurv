@@ -34,15 +34,7 @@ if "`modify'" == "" {
 else {
 	putexcel set "`fname'", sheet("`sname'", modify) modify
 }
-/*
-*Set up spreadsheet
-if "`startrow'" == "" {
-	local myrow = `startrow'
-}
-else { 
-*/
-	local myrow = 6
-//}
+local myrow = 6
 
 local trow=`myrow'-1
 putexcel A1="`c(current_date)'"
@@ -52,6 +44,10 @@ putexcel C`trow'="Coef." D`trow'="Std. Err" E`trow'="ll" ///
 	F`trow'="ul" G`trow'="Variance-covariance"
 
 foreach dist in `dlist' {
+	
+	if "`dist'"=="gamma" {
+		local dist="ggamma"
+	}
 	
 	*Run regression and store output
 	cap noisily streg `varlist' `if', d(`dist') nohr iter(100)

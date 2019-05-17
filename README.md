@@ -11,7 +11,7 @@ For `distfind`:
 
     distfind [varlist]  [if], dlist(string) timevar(varname) failure(varname) [GRaphs] [SUPpress]
 
-Where `varlist` are the variables in the survival model (often treatment), `timevar` is the variable defining the time-to-event, and `failure` is a binary variable for failure vs censoring (1=failure, 0=censored). If the `graphs` option is used, plots will be saved to `curentdirectory/graphs`.`dlist` is the list of distributions to estimate as lowercase strings (see example below).  If the `suppress` option is used, the Cox-Snell residuals will not be plotted. The resulting table of diagnostics is returned in `e(diag)`. 
+Where `varlist` are the variables in the survival model (often treatment), `timevar` is the variable defining the time-to-event, and `failure` is a binary variable for failure vs censoring (1=failure, 0=censored). If the `graphs` option is used, plots will be saved to `curentdirectory/graphs`.`dlist` is the list of distributions to estimate as lowercase strings (see example below).  If the `suppress` option is used, the Cox-Snell residuals will not be plotted. The resulting table of diagnostics is returned in `e(diags)`. 
 
 For `distoutput`:
 	
@@ -25,7 +25,8 @@ For `distoutput`:
 	sysuse cancer.dta, clear
 	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
 	distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)
-	matrix list e(diag)
+	matrix a = e(diags)
+	matrix list a
 	distoutput age i.drug, dlist($dlist) fname("test.xls") sname("outcome")
 	distplot if drug==1, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
 	distplot if drug==2, exrange(60) intrange(10) dlist($dlist) drugnames("Placebo Drug2") ytitle("Proportion alive") xtitle("Time (Months)")
