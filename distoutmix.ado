@@ -47,6 +47,7 @@ putexcel D`trow'="Coef." E`trow'="Std. Err" F`trow'="ll" ///
 foreach dist in `dlist' {
 	foreach mylink in `links' {
 		*Run regression and store output
+		di "Mixture cure model: `dist', `mylink'"
 		cap noisily strsmix `varlist' `if', dist(`dist') link(`mylink') bhazard(hazard0) iter(100)
 		estimates store `dist'_`mylink'
 		if _rc==0 {
@@ -64,6 +65,8 @@ foreach dist in `dlist' {
 			qui putexcel A`myrow' = ("`dist'")
 			qui putexcel B`myrow' = ("`mylink'")
 			local j = 0
+			
+			qui putexcel H`myrow' = matrix(VarCovar)
 			
 			forvalues i = 1/`nvars' {	
 				if !missing(B[`i', 2]) {
@@ -84,7 +87,6 @@ foreach dist in `dlist' {
 					local j = `j' + 1	
 				}		
 			}
-			qui putexcel H`myrow' = matrix(VarCovar)
 		}
 	}
 }
