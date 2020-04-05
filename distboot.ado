@@ -23,9 +23,17 @@ void nozero(Q) {
 }
 end
 
-program define distoutput
+program define distboot
 syntax [varlist(default=none fv)] [if], dlist(string) fname(string)	///
+	timevars(varlist) failvars(varlist) reps(real) seed(real)///
 	sname(string) [note(string) MODify]
+
+set seed `seed'
+describe `timevars'
+local noutcomes = r(k)
+token `timevars'
+di "`noutdcomes'"
+end
 
 
 if "`modify'" == "" {
@@ -62,7 +70,7 @@ foreach dist in `dlist' {
 			local rownms: rown B    //Row names
 			
 			*Get variance-covriance matrix without zeros
-			mata: nozero("A")
+			//mata: nozero("A")
 
 			if !missing("`j'") {
 				local myrow = `myrow' + `j'

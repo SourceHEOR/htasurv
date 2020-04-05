@@ -15,11 +15,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-program define distplot
+program define distplot_at
 version 12.1
 syntax [varlist(default=none)] [if], exrange(real) intrange(real) ///
 	dlist(string) drugnames(string) [ytitle(string) xtitle(string) ///
-	mtitle(string) GRaphs ci fl]
+	mtitle(string) GRaphs]
 tokenize `drugnames'
 
 if "`graphs'"!="" {
@@ -37,14 +37,6 @@ if "`if'"!=""{
 tempfile tempresults2
 save "`tempresults2'"
 
-if "`fl'"!="" {
-	qui sum _t, meanonly 
-	local max = r(max)
-	local mycom = "xline(`max', lpattern(shortdash) lwidth(medium))"
-}
-else {
-	local mycom = ""
-}
 *Some checks
 local varpres:word count `varlist'
 if `varpres'>1 {
@@ -79,15 +71,12 @@ if `exrange'<0 {
 
 *Fit parametric model(s), save stcurve data using outfile
 foreach d in `dlist' {	
-	if "`d'"=="ggamma" {
-		local d = "gamma"
-	}
-	cap noisily streg `varlist' `if', dist(`d') iter(100)
+	cap noisily streg i.parallel `varlist' `if', dist(`d') iter(100)
 	if _rc==0 {
 		if  e(converged)==1 {
 			local dlist2 = "`dlist2' `d'"
 			if `levels'==1 {
-				stcurve, survival range(0 `exrange') outfile(`d', replace)
+				stcurve, at(parallel=2) survival range(0 `exrange') outfile(`d', replace)
 					local myadd "line surv1 _t if dist==1"
 			}
 			else if `levels'==2 {
@@ -122,64 +111,47 @@ local y = 1
 local x = 1
 
 *Set up legend and axis titles
-if "`fl'"=="" {
-	if `levels'==2 {
-		local mylegend = `"1 "`1' - Kaplan-Meier" 2 "`2' - Kaplan-Meier" "'
-	}
-	else {
-		local mylegend = `"1 "`1' - Kaplan-Meier" "' 
-	}
-	if "`ytitle'"=="" {
-		local ytitle = "Survival"
-	}
-	if "`xtitle'"=="" {
-		local xtitle = "Time"
-	}
+if `levels'==2 {
+	local mylegend = `"1 "`1' - Kaplan-Meier" 2 "`2' - Kaplan-Meier" "'
 }
 else {
-	if `levels'==2 {
-		local mylegend = `"1 "95% CI" 2 "`1' - Kaplan-Meier" 3 "95% CI" 4 "`2' - Kaplan-Meier" "'
-	}
-	else {
-		local mylegend = `"1 "95% CI" 2 "`1' - Kaplan-Meier" "' 
-	}
-	if "`ytitle'"=="" {
-		local ytitle = "Survival"
-	}
-	if "`xtitle'"=="" {
-		local xtitle = "Time"
-	}
+	local mylegend = `"1 "`1' - Kaplan-Meier" "' 
+}
+if "`ytitle'"=="" {
+	local ytitle = "Survival"
+}
+if "`xtitle'"=="" {
+	local xtitle = "Time"
+}
 
-} 
 di "$dlist2"
+
 
 *Create legend and call to addplot
 foreach d in `dlist2' {
 	if `levels'==2 {
-		if "`fl'"=="" {
-			local x = `x' + 2
-			local z = `x' + 1
-		}
-		else {
-			local x = `x' + 4
-			local z = `x' + 2
-		}
+		local x = `x' + 2
+		local z = `x' + 1
 		local mylegend = `"`mylegend'"' + `" `x' "`1' - `d'" `z' "`2' - `d'" "'
 		if `y' > 1 {
-		local myadd "`myadd' || line surv1 _t if dist==`y' || line surv2 _t if dist==`y'"
+			//if "`if'"=="" {
+			local myadd "`myadd' || line surv1 _t if dist==`y' || line surv2 _t if dist==`y'"
+			//}
+			//else {
+			//	local myadd "`myadd' || line surv1 _t `if' & dist==`y' || line surv2 _t `if' & dist==`y'"
+			//}
 		}
 	}
 	else {
-		if "`fl'"=="" {
-			local x = `x' + 1
-		}
-		else {
-			local x = `x' + 2
-		}
+		local x = `x' + 1
 		local mylegend = `"`mylegend'"' + `" `x' "`1' - `d'" "'
 		if `y' > 1 {
-			local myadd "`myadd' || line surv1 _t if dist==`y' "
-
+			//if "`if'"=="" {
+				local myadd "`myadd' || line surv1 _t if dist==`y' "
+			//}
+			//else {
+			//	local myadd "`myadd' || line surv1 _t `if' & dist==`y' "
+			//}
 		}
 	}
 	local y=`y'+1
@@ -188,24 +160,24 @@ di "`myadd'"
 
 *Create sts graph based on 1/2 variables and whether and if statement
 if "`if'"!="" & `levels'== 2 {
-	sts graph `if' & real==1, by(`varlist') addplot(`myadd', `mycom'sort ///
+	sts graph `if' & real==1 & parallel==2, by(`varlist') addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange') title("`mtitle'") `ci' 
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"=="" & `levels' == 2 {
-	sts graph if real==1, by(`varlist') addplot(`myadd', `mycom'sort ///
+	sts graph if real==1 & parallel==2, by(`varlist') addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange') title("`mtitle'") `ci' 
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"!="" & `levels' == 1 {
-	sts graph `if' & real==1, addplot(`myadd', `mycom' sort ///
+	sts graph `if' & real==1 & parallel==2, addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange') title("`mtitle'") `ci' 
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 else if "`if'"=="" & `levels' == 1 {
-	sts graph if real==1, addplot(`myadd', `mycom' sort ///
+	sts graph if real==1 & parallel==2, addplot(`myadd', sort ///
 	legend(order(`"`mylegend'"'))) ytitle("`ytitle'") xtitle("`xtitle'") ///
-	xla(0 (`intrange') `exrange') title("`mtitle'") `ci' 
+	xla(0 (`intrange') `exrange') title("`mtitle'")
 }
 
 *Restore original dataset
