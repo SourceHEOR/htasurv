@@ -55,7 +55,7 @@
 {dlgtab:Main}
 
 {phang}
-{cmd:dlist({it:distributions})} list of distributions to try. All lowercase. Note use of  "ggamma" or "gamma". Typically defined in a macro (see example). Legal names are "weibull" "gompertz" "ggamma"/"gamma" "lognormal" "loglogistic" "exponential".
+{cmd:dlist({it:distributions})} list of distributions to try. All lowercase. Note use of  "ggamma" vs "gamma" to denote 3-paramter and 2-parameter gamma distributions, respectively. Typically defined in a macro (see example). Legal names are "weibull" "gompertz" "ggamma" "gamma" "lognormal" "loglogistic" "exponential".
 
 {phang}
 {cmd:sname({it:doctitle})} Excel file to write reuslts to

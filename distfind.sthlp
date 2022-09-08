@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.2.1  07mar2013}{...}
+{* *! version 1.3.0  08Aug2022}{...}
 {findalias asfradohelp}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "[R] help" "help help"}{...}
@@ -56,7 +56,7 @@
 {dlgtab:Main}
 
 {phang}
-{cmd:dlist({it:distributions})} list of distributions to try. All lowercase. Typically defined in a macro (see example). Legal names are "weibull" "gompertz" "gamma" "lognormal" "loglogistic" "exponential".
+{cmd:dlist({it:distributions})} list of distributions to try. All lowercase. Typically defined in a macro (see example). Legal names are "weibull" "gompertz" "ggamma" "lognormal" "loglogistic" "exponential". The two-parameter gamma distribtuion is not supported.
 
 {phang}
 {cmd:timevar({it:timevar})} variable defining time-to-event. Used in the same way as {it:stset}
@@ -72,6 +72,6 @@
 
 
 {phang}{cmd:. sysuse cancer.dta}{p_end}
-{phang}{cmd:. global dlist "gamma weibull gompertz exponential lognormal loglogistic"}{p_end}
+{phang}{cmd:. global dlist "ggamma weibull gompertz exponential lognormal loglogistic"}{p_end}
 {phang}{cmd:. distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)}{p_end}
 {phang}{cmd:. distanalysis age i.drug, sdist(gompertz) doctitle(test) tabcaption("Gompertz")}{p_end}

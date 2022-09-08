@@ -23,7 +23,7 @@ For `distoutput`:
 ### Example use
 
 	sysuse cancer.dta, clear
-	global dlist "gamma weibull gompertz exponential lognormal loglogistic"
+	global dlist "gamma ggamma weibull gompertz exponential lognormal loglogistic"
 	distfind age i.drug, dlist($dlist) timevar(studytime) failure(died)
 	matrix a = e(diags)
 	matrix list a

@@ -24,6 +24,7 @@ void nozero(Q) {
 end
 
 program define distoutput
+version 17.0
 syntax [varlist(default=none fv)] [if], dlist(string) fname(string)	///
 	sname(string) [note(string) MODify]
 
@@ -45,52 +46,51 @@ putexcel C`trow'="Coef." D`trow'="Std. Err" E`trow'="ll" ///
 
 foreach dist in `dlist' {
 	
-	if "`dist'"=="gamma" {
-		local dist="ggamma"
-	}
-	
-	*Run regression and store output
-	cap noisily streg `varlist' `if', d(`dist') nohr iter(100)
-	if _rc!=0 {
-		cap noisily streg `varlist' `if', d(`dist') iter(100)
-	}
-	if _rc==0 {
-		if  e(converged) == 1 {
-			matrix A = e(V)
-			local nvars = rowsof(A) //Includes ommitted variables
-			matrix B = r(table)'
-			local rownms: rown B    //Row names
-			
-			*Get variance-covriance matrix without zeros
-			mata: nozero("A")
-
-			if !missing("`j'") {
-				local myrow = `myrow' + `j'
-			}
-			qui putexcel A`myrow' = ("`dist'")
-			local j = 0
-			
-			forvalues i = 1/`nvars' {	
-				if !missing(B[`i', 2]) {
-					local rowname: word `i' of `rownms'
-					local mynewrow = `myrow' + `j'
-					local mycoef = B[`i', 1]
-					local myse   = B[`i', 2]
-					local myll   = B[`i', 5]
-					local myul   = B[`i', 6]
-					
-					quietly {
-						putexcel B`mynewrow' = "`rowname'"
-						putexcel C`mynewrow' = `mycoef'
-						putexcel D`mynewrow' = `myse'
-						putexcel E`mynewrow' = `myll'
-						putexcel F`mynewrow' = `myul'
-					}
-					local j = `j' + 1	
-				}		
-			}
-			qui putexcel G`myrow' = matrix(VarCovar)
+	if "`dist'"!="gamma" {
+		*Run regression and store output
+		cap noisily streg `varlist' `if', d(`dist') nohr iter(100)
+		if _rc!=0 {
+			cap noisily streg `varlist' `if', d(`dist') iter(100)
 		}
+	}
+	else if "`dist'"=="gamma" {
+		cap noisily mestreg `varlist' `if', d(`dist') iter(100)
+	}
+	if e(converged) == 1 &_rc==0 {
+		matrix A = e(V)
+		local nvars = rowsof(A) //Includes ommitted variables
+		matrix B = r(table)'
+		local rownms: rown B    //Row names
+		
+		*Get variance-covriance matrix without zeros
+		mata: nozero("A")
+
+		if !missing("`j'") {
+			local myrow = `myrow' + `j'
+		}
+		qui putexcel A`myrow' = ("`dist'")
+		local j = 0
+		
+		forvalues i = 1/`nvars' {	
+			if !missing(B[`i', 2]) {
+				local rowname: word `i' of `rownms'
+				local mynewrow = `myrow' + `j'
+				local mycoef = B[`i', 1]
+				local myse   = B[`i', 2]
+				local myll   = B[`i', 5]
+				local myul   = B[`i', 6]
+				
+				quietly {
+					putexcel B`mynewrow' = "`rowname'"
+					putexcel C`mynewrow' = `mycoef'
+					putexcel D`mynewrow' = `myse'
+					putexcel E`mynewrow' = `myll'
+					putexcel F`mynewrow' = `myul'
+				}
+				local j = `j' + 1	
+			}		
+		}
+		qui putexcel G`myrow' = matrix(VarCovar)
 	}
 }
 putexcel close

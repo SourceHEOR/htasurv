@@ -1,5 +1,5 @@
 program define distfind, eclass
-version 12.1
+version 17.0
 syntax [varlist(default=none fv)] [if], dlist(string) timevar(varname) ///
 	failure(varname) [GRaphs] [SUPpress] [strata(varlist)] 
 
@@ -10,27 +10,32 @@ if "`graphs'"!="" & "`suppress'"=="" {
 
 *Loop through distributions, estimate AIC/BIC and Cox-snell residuals
 foreach d in `dlist' {
-	qui stset `timevar' `failure'
-	if "`strata'"!="" {
-		cap noisily streg `varlist' `if', dist(`d') strata(`strata') iter(100)
+	if "`d'"=="gamma" {
+		display as error "Diagnostics not available for 2-parameter gamma. If you wanted the 3-paramter gamma, use 'ggamma'"
 	}
 	else {
-		cap noisily streg `varlist' `if', dist(`d') iter(100)
-	}
-	if  e(converged) == 1 {
-		local dlist2="`dlist2' `d'"
-		estimates store `d'
-		if "`suppress'"=="" {
-			predict double cs, csnell
-			stset, clear
-			qui stset cs `failure'
-			qui sts gen km = s `if'
-			qui gen double H = -ln(km) `if'
-			qui line H cs cs, sort title(`d') leg(off) ///
-				ytitle("Cumulative Hazard", size(small) margin(medsmall)) ///
-				xtitle(Cox-Snell Residuals, size(small) margin(medsmall)) ///
-				saving(`d', replace) name(`d', replace)
-			drop cs km H cs
+		qui stset `timevar' `failure'
+		if "`strata'"!="" {
+			cap noisily streg `varlist' `if', dist(`d') strata(`strata') iter(100)
+		}
+		else {
+			cap noisily streg `varlist' `if', dist(`d') iter(100)
+		}
+		if  e(converged) &_rc==0 == 1 {
+			local dlist2="`dlist2' `d'"
+			estimates store `d'
+			if "`suppress'"=="" {
+				predict double cs, csnell
+				stset, clear
+				qui stset cs `failure'
+				qui sts gen km = s `if'
+				qui gen double H = -ln(km) `if'
+				qui line H cs cs, sort title(`d') leg(off) ///
+					ytitle("Cumulative Hazard", size(small) margin(medsmall)) ///
+					xtitle(Cox-Snell Residuals, size(small) margin(medsmall)) ///
+					saving(`d', replace) name(`d', replace)
+				drop cs km H cs
+			}
 		}
 	}
 }

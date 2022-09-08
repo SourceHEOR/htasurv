@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.2.1  07mar2013}{...}
+{* *! version 1.3.0  08Aug2022}{...}
 {findalias asfradohelp}{...}
 {vieweralsosee "" "--"}{...}
 {vieweralsosee "[R] help" "help help"}{...}
@@ -53,7 +53,7 @@
 {dlgtab:Main}
 
 {phang}
-{cmd:sdist({it:distribution})} distribution to use. All lowercase. Legal names are "weibull" "gompertz" "gamma" "lognormal" "loglogistic" "exponential".
+{cmd:sdist({it:distribution})} distribution to use. All lowercase. Legal names are "weibull" "gompertz" "ggamma" "lognormal" "loglogistic" "exponential". The 2-parameter gamma distribution is not supported (this uses mestreg and the likelihoods are not comparable to those from streg).
 
 {phang}
 {cmd:doctitle()} variable defining name of output files, e.g. "myoutput".
